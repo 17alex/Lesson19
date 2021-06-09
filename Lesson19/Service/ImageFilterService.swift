@@ -4,28 +4,48 @@
 //
 //  Created by Алексей Алексеев on 09.06.2021.
 //
+//"CIPhotoEffectChrome",
+//"CIPhotoEffectFade",
+//"CIPhotoEffectInstant",
+//"CIPhotoEffectNoir",
+//"CIPhotoEffectProcess",
+//"CIPhotoEffectTonal",
+//"CIPhotoEffectTransfer",
+//"CISepiaTone",
+//"CIBlendWithRedMask",
+//"CIBloom",
+//"CIBokehBlur",
+//"CIBoxBlur",
+//"CIBumpDistortion",
+//"CIBumpDistortionLinear",
+
 
 import UIKit
 
 protocol ImageFilterServiceProtocol {
-    func modifi(image: UIImage, with filter: String, complete: @escaping ((UIImage?) -> Void))
+    var filters: [String] { get }
+    func modifi(image: UIImage, with filter: String, intensivity: Float, complete: @escaping ((UIImage?) -> Void))
 }
 
 class ImageFilterService {
     
     private let context = CIContext(options: nil)
+    
+    let filters = CIFilter.filterNames(inCategory: kCICategoryBuiltIn)
+        .filter { filterName -> Bool in CIFilter(name: filterName)?.inputKeys.contains(kCIInputImageKey) ?? false }
+        .filter { filterName -> Bool in CIFilter(name: filterName)?.inputKeys.contains(kCIInputIntensityKey) ?? false }
 }
 
 extension ImageFilterService: ImageFilterServiceProtocol {
     
-    func modifi(image: UIImage, with filter: String, complete: @escaping ((UIImage?) -> Void)) {
+    func modifi(image: UIImage, with filter: String, intensivity: Float, complete: @escaping ((UIImage?) -> Void)) {
         let myQueue = DispatchQueue(label: "myQueue", qos: .userInitiated, attributes: .concurrent)
         myQueue.async { [weak self] in
             guard let strongSelf = self else { return }
             guard let currentFilter = CIFilter(name: filter) else { DispatchQueue.main.async { complete(nil) }; return }
             let beginImage = CIImage(image: image)
             currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
-            //            currentFilter.setValue(0.5, forKey: kCIInputIntensityKey)
+            currentFilter.setValue(intensivity, forKey: kCIInputIntensityKey)
             guard let output = currentFilter.outputImage,
                   let cgImage = strongSelf.context.createCGImage(output, from: output.extent) else { DispatchQueue.main.async { complete(nil) }; return }
             print("FilterName =", filter, "Thread =", Thread.current)

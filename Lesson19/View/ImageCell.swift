@@ -47,7 +47,6 @@ class ImageCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-//        contentView.backgroundColor = .orange
         contentView.addSubview(imageView)
         contentView.addSubview(nameLabel)
         
