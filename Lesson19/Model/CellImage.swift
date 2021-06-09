@@ -5,7 +5,7 @@
 //  Created by Алексей Алексеев on 08.06.2021.
 //
 
-import Foundation
+import UIKit
 
 struct CellImage {
     let filterName: String

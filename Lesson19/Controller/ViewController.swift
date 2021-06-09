@@ -12,7 +12,6 @@ class ViewController: UIViewController {
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-//        imageView.backgroundColor = .systemGray4
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -28,7 +27,6 @@ class ViewController: UIViewController {
     private lazy var imageCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-//        layout.itemSize = CGSize(width: 90, height: 90)
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.register(ImageCell.self, forCellWithReuseIdentifier: ImageCell.reuseID)
         collection.dataSource = self
@@ -38,67 +36,88 @@ class ViewController: UIViewController {
         return collection
     }()
     
-    private lazy var barButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(buttonPress))
+    private lazy var addButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonPress))
+    private lazy var saveButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveButtonPress))
+    
+    private let imageFilterService: ImageFilterServiceProtocol
+    private let filters = Filter().names
+    private var filteredImages: [CellImage] = []
+    
     private var originalImage: UIImage! {
         didSet {
             print("didSet")
+            imageView.image = originalImage
+            title = ""
             createImages()
             imageCollection.reloadData()
         }
     }
     
-    private let context = CIContext(options: nil)
-    private var filteredImages: [CellImage] = []
-//    private let filters = CIFilter.filterNames(inCategory: kCICategoryBuiltIn)
-    var filters = [
-        "CIPhotoEffectChrome",
-        "CIPhotoEffectFade",
-        "CIPhotoEffectInstant",
-        "CIPhotoEffectNoir",
-        "CIPhotoEffectProcess",
-        "CIPhotoEffectTonal",
-        "CIPhotoEffectTransfer",
-        "CISepiaTone"
-    ]
+    //MARK: - Init
     
-    //MArK: - LiveCycles
+    init(imageFilterService: ImageFilterServiceProtocol) {
+        self.imageFilterService = imageFilterService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    //MARK: - LiveCycles
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
-        imageView.image = UIImage(named: "forest")
-        originalImage = UIImage(named: "forest")
+        let image = UIImage(named: "forest")
+        imageView.image = image
+        originalImage = image
     }
     
     //MARK: - Metods
     
     private func createImages() {
         filteredImages.removeAll()
+        imageCollection.reloadData()
         
-        filteredImages = filters.compactMap() { filterName in
-            guard let currentFilter = CIFilter(name: filterName) else { return nil }
-            let beginImage = CIImage(image: originalImage)
-            currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
-//            currentFilter.setValue(0.5, forKey: kCIInputIntensityKey)
-            guard let output = currentFilter.outputImage,
-                  let cgImage = context.createCGImage(output, from: output.extent) else { return nil }
-            print("CompactMap =", filterName)
-            print("Thread =", Thread.current)
-            return CellImage(filterName: filterName, image: UIImage(cgImage: cgImage))
-            
+        filters.forEach { filterName in
+            imageFilterService.modifi(image: originalImage, with: filterName) { outImage in
+                guard let outImage = outImage else { return }
+                let cellImage = CellImage(filterName: filterName, image: outImage)
+                self.filteredImages.append(cellImage)
+                let indexPath = IndexPath(item: self.filteredImages.count - 1, section: 0)
+                self.imageCollection.insertItems(at: [indexPath])
+            }
         }
     }
 
-    @objc private func buttonPress() {
-        
+    @objc private func addButtonPress() {
         guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else { return }
         present(imagePicker, animated: true, completion: nil)
     }
     
+    @objc private func saveButtonPress() {
+        guard let image = imageView.image else { return }
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            let ac = UIAlertController(title: "Save error", message: error.localizedDescription, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
+        } else {
+            let ac = UIAlertController(title: "Saved!", message: "Your altered image has been saved to your photos.", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
+        }
+    }
+    
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        navigationItem.rightBarButtonItem = barButtonItem
+        navigationItem.rightBarButtonItem = saveButtonItem
+        navigationItem.leftBarButtonItem = addButtonItem
         view.addSubview(imageView)
         view.addSubview(imageCollection)
         
@@ -116,23 +135,11 @@ class ViewController: UIViewController {
     }
 }
 
-//MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
-
-extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let image = info[.editedImage] as? UIImage else { return }
-        originalImage = image
-        dismiss(animated: true) { [weak self] in self?.imageView.image = image }
-    }
-}
-
 //MARK: - UICollectionViewDataSource
 
 extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("numberOfItemsInSection =", filteredImages.count)
         return filteredImages.count
     }
     
@@ -153,6 +160,19 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        imageView.image = filteredImages[indexPath.row].image
+        let selectImage = filteredImages[indexPath.item]
+        imageView.image = selectImage.image
+        title = selectImage.filterName
+    }
+}
+
+//MARK: - UIImagePickerController
+
+extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        dismiss(animated: true)
+        guard let image = info[.editedImage] as? UIImage else { return }
+        originalImage = image
     }
 }

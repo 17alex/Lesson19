@@ -13,6 +13,8 @@
 		8DE928A4266FC63E00D7D788 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8DE928A2266FC63E00D7D788 /* LaunchScreen.storyboard */; };
 		8DE928B2266FDE7900D7D788 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE928B1266FDE7900D7D788 /* ImageCell.swift */; };
 		8DE928B5266FF4EF00D7D788 /* CellImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE928B4266FF4EF00D7D788 /* CellImage.swift */; };
+		8DE928BC2670D6FE00D7D788 /* ImageFilterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE928BB2670D6FE00D7D788 /* ImageFilterService.swift */; };
+		8DE928C02670DBBE00D7D788 /* FilterNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE928BF2670DBBE00D7D788 /* FilterNames.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		8DE928A5266FC63E00D7D788 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DE928B1266FDE7900D7D788 /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		8DE928B4266FF4EF00D7D788 /* CellImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellImage.swift; sourceTree = "<group>"; };
+		8DE928BB2670D6FE00D7D788 /* ImageFilterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFilterService.swift; sourceTree = "<group>"; };
+		8DE928BF2670DBBE00D7D788 /* FilterNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterNames.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,15 +60,49 @@
 		8DE92896266FC63C00D7D788 /* Lesson19 */ = {
 			isa = PBXGroup;
 			children = (
+				8DE928C22670DD0900D7D788 /* Service */,
+				8DE928B7266FF89300D7D788 /* Model */,
+				8DE928B9266FF8AD00D7D788 /* View */,
+				8DE928B8266FF8A200D7D788 /* Controller */,
 				8DE92897266FC63C00D7D788 /* AppDelegate.swift */,
-				8DE9289B266FC63C00D7D788 /* ViewController.swift */,
-				8DE928B4266FF4EF00D7D788 /* CellImage.swift */,
-				8DE928B1266FDE7900D7D788 /* ImageCell.swift */,
 				8DE928A0266FC63E00D7D788 /* Assets.xcassets */,
 				8DE928A2266FC63E00D7D788 /* LaunchScreen.storyboard */,
 				8DE928A5266FC63E00D7D788 /* Info.plist */,
 			);
 			path = Lesson19;
+			sourceTree = "<group>";
+		};
+		8DE928B7266FF89300D7D788 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8DE928B4266FF4EF00D7D788 /* CellImage.swift */,
+				8DE928BF2670DBBE00D7D788 /* FilterNames.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		8DE928B8266FF8A200D7D788 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				8DE9289B266FC63C00D7D788 /* ViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		8DE928B9266FF8AD00D7D788 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8DE928B1266FDE7900D7D788 /* ImageCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		8DE928C22670DD0900D7D788 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				8DE928BB2670D6FE00D7D788 /* ImageFilterService.swift */,
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,7 +176,9 @@
 			files = (
 				8DE9289C266FC63C00D7D788 /* ViewController.swift in Sources */,
 				8DE928B5266FF4EF00D7D788 /* CellImage.swift in Sources */,
+				8DE928C02670DBBE00D7D788 /* FilterNames.swift in Sources */,
 				8DE92898266FC63C00D7D788 /* AppDelegate.swift in Sources */,
+				8DE928BC2670D6FE00D7D788 /* ImageFilterService.swift in Sources */,
 				8DE928B2266FDE7900D7D788 /* ImageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -279,6 +319,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PSSGUD5C34;
 				INFOPLIST_FILE = Lesson19/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -298,6 +339,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PSSGUD5C34;
 				INFOPLIST_FILE = Lesson19/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = (
