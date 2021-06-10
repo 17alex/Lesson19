@@ -41,7 +41,7 @@ class ImageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func set(cellImage: CellImage) {
+    func set(cellImage: CellModel) {
         imageView.image = cellImage.image
         nameLabel.text = cellImage.filterName
     }

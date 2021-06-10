@@ -40,7 +40,7 @@ class ViewController: UIViewController {
         let slider = UISlider()
         slider.minimumValue = 0.0
         slider.maximumValue = 1.0
-        slider.setValue(0.5, animated: false)
+        slider.setValue(0.8, animated: false)
         slider.addTarget(self, action: #selector(sliderValueChange(slider:)), for: .touchUpInside)
         slider.translatesAutoresizingMaskIntoConstraints = false
         return slider
@@ -48,21 +48,22 @@ class ViewController: UIViewController {
     
     private lazy var addButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(imagePickerButtonPress))
     private lazy var saveButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveImageButtonPress))
+    private lazy var settingButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(settingButtonPress))
     
     private let imageFilterService: ImageFilterServiceProtocol
-//    private let filters = Filter().names
+
     private var filters: [String] {
         return imageFilterService.filters
     }
     
     private var mainFilterName = ""
-    private var filteredImages: [CellImage] = []
+    private var filteredImages: [CellModel] = []
     
     private var originalImage: UIImage! {
         didSet {
             print("didSet")
             mainImageView.image = originalImage
-            title = ""
+            title = "no filter"
             createImages()
             imageCollection.reloadData()
         }
@@ -97,9 +98,9 @@ class ViewController: UIViewController {
         imageCollection.reloadData()
         
         filters.forEach { filterName in
-            imageFilterService.modifi(image: originalImage, with: filterName, intensivity: 0.5) { outImage in
+            imageFilterService.modifi(image: originalImage, with: filterName, intensivity: 0.8) { outImage in
                 guard let outImage = outImage else { return }
-                let cellImage = CellImage(filterName: filterName, image: outImage)
+                let cellImage = CellModel(filterName: filterName, image: outImage)
                 self.filteredImages.append(cellImage)
                 let indexPath = IndexPath(item: self.filteredImages.count - 1, section: 0)
                 self.imageCollection.insertItems(at: [indexPath])
@@ -113,6 +114,10 @@ class ViewController: UIViewController {
             guard let outImage = outImage else { return }
             self.mainImageView.image = outImage
         }
+    }
+    
+    @objc private func settingButtonPress() {
+        intencivySlider.isHidden = !intencivySlider.isHidden
     }
     
     @objc private func imagePickerButtonPress() {
@@ -139,7 +144,7 @@ class ViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        navigationItem.rightBarButtonItem = saveButtonItem
+        navigationItem.rightBarButtonItems = [saveButtonItem, settingButtonItem]
         navigationItem.leftBarButtonItem = addButtonItem
         view.addSubview(mainImageView)
         view.addSubview(imageCollection)
@@ -161,6 +166,8 @@ class ViewController: UIViewController {
             intencivySlider.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             intencivySlider.heightAnchor.constraint(equalToConstant: 50),
         ])
+        
+        intencivySlider.isHidden = true
     }
 }
 
@@ -193,7 +200,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         mainImageView.image = selectCell.image
         mainFilterName = selectCell.filterName
         title = selectCell.filterName
-        intencivySlider.setValue(0.5, animated: true)
+        intencivySlider.setValue(0.8, animated: true)
     }
 }
 

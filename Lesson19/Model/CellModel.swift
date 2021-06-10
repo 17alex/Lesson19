@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct CellImage {
+struct CellModel {
     let filterName: String
     let image: UIImage
 }
