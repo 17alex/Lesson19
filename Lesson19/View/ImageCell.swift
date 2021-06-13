@@ -9,6 +9,8 @@ import UIKit
 
 class ImageCell: UICollectionViewCell {
     
+    //MARK: - Propertis
+    
     static var reuseID: String {
         self.description()
     }
@@ -31,6 +33,8 @@ class ImageCell: UICollectionViewCell {
         return label
     }()
     
+    //MARK: - Init
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -40,6 +44,8 @@ class ImageCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    //MARK: - Metods
     
     func set(cellImage: CellModel) {
         imageView.image = cellImage.image

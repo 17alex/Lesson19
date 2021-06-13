@@ -9,6 +9,8 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    //MARK: - Propertis
+    
     private let mainImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -40,7 +42,7 @@ class ViewController: UIViewController {
         let slider = UISlider()
         slider.minimumValue = 0.0
         slider.maximumValue = 1.0
-        slider.setValue(0.8, animated: false)
+        slider.setValue(defaultValue, animated: false)
         slider.addTarget(self, action: #selector(sliderValueChange(slider:)), for: .touchUpInside)
         slider.translatesAutoresizingMaskIntoConstraints = false
         return slider
@@ -58,6 +60,7 @@ class ViewController: UIViewController {
     
     private var mainFilterName = ""
     private var filteredImages: [CellModel] = []
+    private let defaultValue: Float = 0.5
     
     private var originalImage: UIImage! {
         didSet {
@@ -98,10 +101,10 @@ class ViewController: UIViewController {
         imageCollection.reloadData()
         
         filters.forEach { filterName in
-            imageFilterService.modifi(image: originalImage, with: filterName, intensivity: 0.8) { outImage in
+            imageFilterService.modifi(image: originalImage, with: filterName, intensivity: defaultValue) { outImage in
                 guard let outImage = outImage else { return }
-                let cellImage = CellModel(filterName: filterName, image: outImage)
-                self.filteredImages.append(cellImage)
+                let cellModel = CellModel(filterName: filterName, image: outImage)
+                self.filteredImages.append(cellModel)
                 let indexPath = IndexPath(item: self.filteredImages.count - 1, section: 0)
                 self.imageCollection.insertItems(at: [indexPath])
             }
@@ -200,7 +203,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         mainImageView.image = selectCell.image
         mainFilterName = selectCell.filterName
         title = selectCell.filterName
-        intencivySlider.setValue(0.8, animated: true)
+        intencivySlider.setValue(defaultValue, animated: true)
     }
 }
 
